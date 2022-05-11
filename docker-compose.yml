@@ -1,0 +1,51 @@
+version: '3'
+services:
+  app:
+    env_file:
+      - .env
+    container_name: awesome_nest_boilerplate
+    restart: always
+    build: .
+    ports:
+      - '$PORT:$PORT'
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      TZ: 'GMT'
+      PGTZ: 'GMT'
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - postgres
+
+  adminer:
+    links:
+      - postgres:postgres
+    container_name: adminer
+    image: adminer
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    networks:
+      - postgres
+
+volumes:
+  pg_data:
+networks:
+  postgres:
+    driver: bridge
+  elastic:
+    driver: bridge
